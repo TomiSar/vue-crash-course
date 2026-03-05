@@ -1,8 +1,9 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { defineProps, reactive, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import jobData from '@/jobs.json';
 import JobListing from '@/components/JobListing.vue';
+import { PulseLoader } from 'vue-spinner';
+import { fetchJobs } from '@/api/jobs';
 
 defineProps({
   limit: Number,
@@ -12,7 +13,21 @@ defineProps({
   },
 });
 
-const jobs = ref(jobData);
+const state = reactive({
+  jobs: [],
+  isLoading: true,
+});
+
+onMounted(async () => {
+  state.isLoading = true;
+  try {
+    state.jobs = await fetchJobs();
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+  } finally {
+    state.isLoading = false;
+  }
+});
 </script>
 <template>
   <section class="bg-blue-50 px-4 py-10">
@@ -20,9 +35,15 @@ const jobs = ref(jobData);
       <h2 class="text-3xl font-bold text-green-500 mb-6 text-center">
         Browse Jobs
       </h2>
+
+      <!-- Show loading spinner while loading -->
+      <div v-if="state.isLoading" class="text-center text-gray-500 py-6">
+        <PulseLoader />
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <JobListing
-          v-for="job in jobs.slice(0, limit || jobs.length)"
+          v-for="job in state.jobs.slice(0, limit || state.jobs.length)"
           :key="job.id"
           :job="job"
         />

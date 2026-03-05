@@ -2,13 +2,9 @@
 
 This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+## Vue Jobs Project
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+<img src="public/screen.png" />
 
 ## Install Dependencies
 
@@ -24,13 +20,33 @@ npm install
 npm run dev
 ```
 
-### Build Production
+### Run JSON Server on http://localhost:5000
 
-```sh
+```bash
+npm run server
+```
+
+### Build for Production
+
+```bash
 npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
 ```
 
 ### Docs Links
 
 - https://v2.tailwindcss.com/docs/guides/vue-3-vite
 - https://github.com/primefaces/primeicons
+
+## Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
