@@ -38,6 +38,10 @@ npm run build
 npm run preview
 ```
 
+### Deployed application
+
+https://jobs-app-vue.netlify.app/
+
 ### Docs Links
 
 - https://v2.tailwindcss.com/docs/guides/vue-3-vite
