@@ -47,17 +47,25 @@ const truncatedDescription = computed(() => {
       <h3 class="text-green-500 mb-2">{{ job.salary }}</h3>
       <div class="border border-gray-100 mb-5"></div>
 
-      <div class="flex flex-col lg:flex-row justify-between mb-4">
+      <div class="flex flex-col xl:flex-row justify-between mb-4">
         <div class="text-orange-700 mb-3">
           <i class="pi pi-map-marker text-orange-700"></i>
           {{ job.location }}
         </div>
-        <RouterLink
-          class="h-[36px] bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-center text-sm"
-          :to="`/jobs/${job.id}`"
-        >
-          Read More
-        </RouterLink>
+        <div class="flex flex-col xl:flex-row gap-2 xl:gap-4 w-full xl:w-auto">
+          <RouterLink
+            class="h-[36px] bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-center text-xs xl:text-sm w-full xl:w-auto"
+            :to="`/jobs/${job.id}`"
+          >
+            Read More
+          </RouterLink>
+          <RouterLink
+            class="h-[36px] bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-center text-xs xl:text-sm w-full xl:w-auto"
+            :to="`/jobs/edit/${job.id}`"
+          >
+            Edit Job
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>
