@@ -3,8 +3,7 @@ import { mount } from '@vue/test-utils';
 import JobListing from '../JobListing.vue';
 
 const jobMock = {
-  id: 1,
-  title: 'Frontend Developer',
+  title: 'Vue Frontend Developer',
   description:
     'A long description for the job that exceeds 90 characters. This is just the beginning of the description. More details about the job will be provided here.',
   type: 'Full-time',

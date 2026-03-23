@@ -26,6 +26,13 @@ npm run dev
 npm run server
 ```
 
+### Run Tests
+
+```bash
+npm run test
+npm run test-coverage
+```
+
 ### Build for Production
 
 ```bash

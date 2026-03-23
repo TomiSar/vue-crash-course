@@ -1,8 +1,9 @@
 {
   "jobs": [
     {
-      "type": "Full-Time",
+      "id": 1,
       "title": "Sr Vue Dev",
+      "type": "Full-Time",
       "description": "Talented Front-End Developer to join our team in California. The ideal candidate will have strong skills in HTML, CSS, and JavaScript, with experience working with modern JavaScript frameworks such as Vue or Angular.",
       "salary": "$125K - $150K",
       "location": "California, SF",
@@ -11,8 +12,7 @@
         "description": "NewTek Solutions is a leading technology company specializing in web development and digital solutions. We pride ourselves on delivering high-quality products and services to our clients while fostering a collaborative and innovative work environment.",
         "contactEmail": "contact@newagesolutions.com",
         "contactPhone": "555-555-1122"
-      },
-      "id": 1
+      }
     },
     {
       "id": 2,
@@ -43,8 +43,9 @@
       }
     },
     {
-      "type": "Remote",
+      "id": 4,
       "title": "Vue Front-End Developer",
+      "type": "Remote",
       "description": "Join our team as a Part-Time Front-End Developer in beautiful Pheonix, AZ. We are looking for a self-motivated individual with a passion for creating engaging user experiences. This position offers flexible hours and the opportunity to work remotely.",
       "salary": "$60K - $70K",
       "location": "Pheonix, AZ",
@@ -53,8 +54,7 @@
         "description": "Alpha Elite is a dynamic startup specializing in digital marketing and web development. We are committed to fostering a diverse and inclusive workplace where creativity and innovation thrive.",
         "contactEmail": "contact@adipisicingelit.com",
         "contactPhone": "555-555-5555"
-      },
-      "id": 4
+      }
     },
     {
       "id": 5,

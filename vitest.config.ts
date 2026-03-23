@@ -10,6 +10,7 @@ export default defineConfig({
       postcss: path.resolve(__dirname, 'tests/cssMock.js'),
       tailwindcss: path.resolve(__dirname, 'tests/cssMock.js'),
       '@csstools/css-calc': path.resolve(__dirname, 'tests/cssMock.js'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   test: {
