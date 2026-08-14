@@ -32,6 +32,13 @@ npm run server
 npm run dev
 ```
 
+### Run Tests
+
+```bash
+npm run test
+npm run test-coverage
+```
+
 ### Build for Production
 
 ```bash
@@ -52,6 +59,7 @@ https://jobs-app-vue.netlify.app/
 
 - https://v2.tailwindcss.com/docs/guides/vue-3-vite
 - https://github.com/primefaces/primeicons
+- https://vitest.dev/
 
 ## Recommended IDE Setup
 

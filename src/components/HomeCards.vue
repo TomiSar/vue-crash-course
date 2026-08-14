@@ -14,6 +14,7 @@ import Card from '@/components/Card.vue';
           <RouterLink
             class="inline-block bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-700"
             to="/jobs"
+            data-testid="browse-jobs-link"
           >
             Browse Jobs
           </RouterLink>
@@ -26,6 +27,7 @@ import Card from '@/components/Card.vue';
           <RouterLink
             class="inline-block bg-green-500 text-white rounded-lg px-4 py-2 hover:bg-green-600"
             to="/jobs/add"
+            data-testid="add-job-link"
           >
             Add Job
           </RouterLink>

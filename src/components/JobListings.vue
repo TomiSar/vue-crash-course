@@ -6,8 +6,8 @@ import { PulseLoader } from 'vue-spinner';
 import { fetchJobs } from '@/api/jobs';
 
 defineProps({
-  limit: Number,
-  showButton: {
+  jobLimit: Number,
+  showAllJobsButton: {
     type: Boolean,
     default: false,
   },
@@ -52,7 +52,7 @@ onMounted(async () => {
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <JobListing
-          v-for="job in state.jobs.slice(0, limit || state.jobs.length)"
+          v-for="job in state.jobs.slice(0, jobLimit || state.jobs.length)"
           :key="job.id"
           :job="job"
         />
@@ -60,7 +60,7 @@ onMounted(async () => {
     </div>
   </section>
 
-  <section v-if="showButton" class="m-auto max-w-lg my-10 px-6">
+  <section v-if="showAllJobsButton" class="m-auto max-w-lg my-10 px-6">
     <RouterLink
       class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
       to="/jobs"
