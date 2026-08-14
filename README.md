@@ -10,20 +10,26 @@ This template should help get you started developing with Vue 3 in Vite.
 
 ```sh
 npm install
+cd server
+npm install
 ```
 
-## Run Vite Frontend
+### Run Client on http://localhost:3000
 
-### Vue will run on http://localhost:3000
-
-```sh
-npm run dev
+```bash
+npm run client
 ```
 
-### Run JSON Server on http://localhost:5000
+### Run Server on http://localhost:5000
 
 ```bash
 npm run server
+```
+
+### Run application client/server
+
+```bash
+npm run dev
 ```
 
 ### Build for Production

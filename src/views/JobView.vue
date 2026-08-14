@@ -4,6 +4,7 @@ import { useRoute, RouterLink, useRouter } from 'vue-router';
 import { PulseLoader } from 'vue-spinner';
 import { fetchJobById, deleteJob } from '../api/jobs';
 import BackButton from '../components/BackButton.vue';
+import Modal from '../components/Modal.vue';
 import { useToast, POSITION } from 'vue-toastification';
 
 const route = useRoute();
@@ -11,37 +12,41 @@ const router = useRouter();
 const toast = useToast();
 const jobId = route.params.id;
 const state = reactive({
-  job: { company: {} },
+  job: null,
   isLoading: true,
+  isDeleteModalOpen: false,
 });
+
+const openDeleteModal = () => {
+  state.isDeleteModalOpen = true;
+};
+
+const closeDeleteModal = () => {
+  state.isDeleteModalOpen = false;
+};
 
 const handleDeleteJob = async () => {
   try {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this job?',
-    );
-    if (confirmDelete) {
-      await deleteJob(jobId);
-      toast.success('Job deleted successfully!', {
-        position: POSITION.TOP_RIGHT,
-        timeout: 2000,
-      });
-      router.push('/jobs');
-    }
+    await deleteJob(jobId);
+    toast.success('Job deleted successfully!', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 2000,
+    });
+    closeDeleteModal();
+    router.push('/jobs');
   } catch (error) {
     console.error('Error deleting job:', error);
     toast.error('Error deleting job!', {
       position: POSITION.TOP_RIGHT,
       timeout: 2000,
     });
+    closeDeleteModal();
   }
 };
 
 onMounted(async () => {
-  state.isLoading = true;
   try {
-    const response = await fetchJobById(jobId);
-    state.job = response;
+    state.job = await fetchJobById(jobId);
   } catch (error) {
     console.error('Error fetching job:', error);
   } finally {
@@ -52,7 +57,7 @@ onMounted(async () => {
 
 <template>
   <BackButton />
-  <section class="bg-green-50" v-if="!state.isLoading">
+  <section class="bg-green-50" v-if="!state.isLoading && state.job">
     <div class="container m-auto py-10 px-6">
       <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
         <main>
@@ -87,18 +92,18 @@ onMounted(async () => {
           <!-- Company Info -->
           <div class="bg-white p-6 rounded-lg shadow-md">
             <h3 class="text-xl font-bold mb-6">Company Info</h3>
-            <h2 class="text-2xl">{{ state.job.company?.name }}</h2>
+            <h2 class="text-2xl">{{ state.job.company.name }}</h2>
             <p class="my-2">
-              {{ state.job.company?.description }}
+              {{ state.job.company.description }}
             </p>
             <hr class="my-4" />
             <h3 class="text-xl">Contact Email:</h3>
             <p class="my-2 bg-green-100 p-2 font-bold">
-              {{ state.job.company?.contactEmail }}
+              {{ state.job.company.contactEmail }}
             </p>
             <h3 class="text-xl">Contact Phone:</h3>
             <p class="my-2 bg-green-100 p-2 font-bold">
-              {{ state.job.company?.contactPhone }}
+              {{ state.job.company.contactPhone }}
             </p>
           </div>
 
@@ -113,7 +118,7 @@ onMounted(async () => {
             </RouterLink>
             <button
               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-              @click="handleDeleteJob"
+              @click="openDeleteModal"
             >
               Delete Job
             </button>
@@ -123,8 +128,31 @@ onMounted(async () => {
     </div>
   </section>
 
-  <!-- Show loading spinner while loading -->
-  <div v-else class="text-center text-gray-500 py-6">
-    <PulseLoader />
+  <div
+    v-else-if="state.isLoading"
+    class="flex flex-col justify-center items-center py-40"
+  >
+    <PulseLoader color="#22c55e" size="15px" />
+    <p class="text-gray-500 mt-4 font-medium">Loading jobs...</p>
   </div>
+  <div
+    v-else
+    class="text-center text-gray-500 py-20 bg-white m-4 rounded-lg shadow-md"
+  >
+    <i class="pi pi-exclamation-circle text-4xl text-gray-300 mb-4"></i>
+    <p class="text-xl">Job not found.</p>
+    <RouterLink to="/jobs" class="text-green-500 hover:underline mt-2 block">
+      Back to Job Listings
+    </RouterLink>
+  </div>
+
+  <Modal
+    :isOpen="state.isDeleteModalOpen"
+    title="Delete Job"
+    :message="`Are you sure you want to delete ${state.job?.title} job? This action cannot be undone.`"
+    confirmText="Yes"
+    cancelText="Cancel"
+    @confirm="handleDeleteJob"
+    @cancel="closeDeleteModal"
+  />
 </template>

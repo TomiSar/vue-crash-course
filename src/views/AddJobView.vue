@@ -74,6 +74,7 @@ const handleSubmit = async () => {
               <option value="Full-Time">Full-Time</option>
               <option value="Part-Time">Part-Time</option>
               <option value="Remote">Remote</option>
+              <option value="Contract">Contract</option>
               <option value="Internship">Internship</option>
             </select>
           </div>
@@ -88,7 +89,7 @@ const handleSubmit = async () => {
               id="name"
               name="name"
               v-model="form.title"
-              placeholder="eg. Beautiful Apartment In Miami"
+              placeholder="Software Engineer, Marketing Manager, etc."
               required
             />
           </div>

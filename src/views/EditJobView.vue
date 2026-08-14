@@ -1,11 +1,11 @@
 <script setup>
-import router from '@/router';
 import { onMounted, reactive } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { fetchJobById, updateJob } from '../api/jobs';
 import { POSITION, useToast } from 'vue-toastification';
 
 const route = useRoute();
+const router = useRouter();
 const jobId = route.params.id;
 const toast = useToast();
 
@@ -26,30 +26,28 @@ const form = reactive({
 const state = reactive({
   job: { company: {} },
   isLoading: true,
+  originalData: null,
 });
 
 const handleSubmit = async () => {
-  const editJob = {
-    type: form.type,
-    title: form.title,
-    description: form.description,
-    salary: form.salary,
-    location: form.location,
-    company: {
-      name: form.company.name,
-      description: form.company.description,
-      contactEmail: form.company.contactEmail,
-      contactPhone: form.company.contactPhone,
-    },
-  };
+  const isFormChanged =
+    JSON.stringify(form) !== JSON.stringify(state.originalData);
+  if (!isFormChanged) {
+    toast.info(`No changes made to the job ${state.originalData.title}`, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 2000,
+    });
+    router.push(`/jobs/${jobId}`);
+    return;
+  }
 
   try {
-    const response = await updateJob(jobId, editJob);
+    const updatedJob = await updateJob(jobId, { ...form });
     toast.success('Job updated successfully!', {
       position: POSITION.TOP_RIGHT,
       timeout: 2000,
     });
-    router.push(`/jobs/${response.id}`);
+    router.push(`/jobs/${updatedJob.id}`);
   } catch (error) {
     console.error('Error updating job:', error);
     toast.error('Error updating job!', {
@@ -60,22 +58,12 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
-  // Populate form with existing job data if needed (fetch job by ID and set form values)
   try {
-    const response = await fetchJobById(jobId);
-    state.job = response;
-    // Populate inputs with existing job data
-    form.type = response.type;
-    form.title = response.title;
-    form.description = response.description;
-    form.salary = response.salary;
-    form.location = response.location;
-    form.company.name = response.company.name;
-    form.company.description = response.company.description;
-    form.company.contactEmail = response.company.contactEmail;
-    form.company.contactPhone = response.company.contactPhone;
+    const data = await fetchJobById(jobId);
+    Object.assign(form, data);
+    state.originalData = JSON.parse(JSON.stringify(form));
   } catch (error) {
-    console.error('Error fetching job', error);
+    toast.error('Could not load job data');
   } finally {
     state.isLoading = false;
   }
@@ -105,6 +93,7 @@ onMounted(async () => {
               <option value="Full-Time">Full-Time</option>
               <option value="Part-Time">Part-Time</option>
               <option value="Remote">Remote</option>
+              <option value="Contract">Contract</option>
               <option value="Internship">Internship</option>
             </select>
           </div>
@@ -119,7 +108,7 @@ onMounted(async () => {
               id="name"
               name="name"
               v-model="form.title"
-              placeholder="eg. Beautiful Apartment In Miami"
+              placeholder="Software Engineer, Marketing Manager, etc."
               required
             />
           </div>
