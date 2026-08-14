@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Navbar from '../Navbar.vue';
 
-// Mock vue-router and allow dynamic useRoute return value
 let mockRoutePath = '/';
 vi.mock('vue-router', () => ({
   useRoute: () => ({ path: mockRoutePath }),
