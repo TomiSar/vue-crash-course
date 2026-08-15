@@ -117,7 +117,7 @@ describe('JobListings.vue', () => {
     expect(wrapper.text()).toContain('View All Jobs');
   });
 
-  describe('Sorting Functionality', () => {
+  describe('JobListings Sorting', () => {
     beforeEach(async () => {
       fetchJobs.mockResolvedValue(jobsMock);
     });
@@ -133,9 +133,8 @@ describe('JobListings.vue', () => {
       expect(jobs[0].text()).toBe('Intern');
       expect(wrapper.text()).toContain('Filter title-asc');
 
-      // Painetaan uudestaan (poistaa sorttauksen)
       await btn.trigger('click');
-      expect(wrapper.text()).toContain('Filter '); // sortBy on tyhjä
+      expect(wrapper.text()).toContain('Filter ');
     });
 
     it('sorts by title-desc', async () => {
@@ -156,6 +155,8 @@ describe('JobListings.vue', () => {
 
       expect(jobs[0].text()).toBe('Intern');
       expect(jobs[1].text()).toBe('Java Backend Developer');
+      expect(jobs[2].text()).toBe('Vue Frontend Developer');
+      expect(jobs[3].text()).toBe('Web Fullstack Developer');
     });
 
     it('sorts by salary-desc', async () => {
@@ -167,6 +168,8 @@ describe('JobListings.vue', () => {
 
       expect(jobs[0].text()).toBe('Web Fullstack Developer');
       expect(jobs[1].text()).toBe('Vue Frontend Developer');
+      expect(jobs[2].text()).toBe('Java Backend Developer');
+      expect(jobs[3].text()).toBe('Intern');
     });
   });
 });
