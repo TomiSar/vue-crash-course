@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import JobListings from '../JobListings.vue';
 import { fetchJobs } from '@/api/jobs';
@@ -30,6 +30,14 @@ const jobsMock = [
     salary: '$6500',
     location: 'Tampere',
   },
+  {
+    id: 4,
+    title: 'Intern',
+    description: 'Internship job description.',
+    type: 'Internship',
+    salary: undefined,
+    location: 'Oulu',
+  },
 ];
 
 vi.mock('@/api/jobs', () => ({
@@ -38,43 +46,127 @@ vi.mock('@/api/jobs', () => ({
 
 const global = {
   stubs: {
-    RouterLink: {
-      template: '<a><slot /></a>',
-    },
+    RouterLink: { template: '<a><slot /></a>' },
     JobListing: {
-      template: '<div class="job-listing">JobListingStub</div>',
+      template: '<div class="job-stub">{{ job.title }}</div>',
       props: ['job'],
     },
-    PulseLoader: true,
+    PulseLoader: { template: '<div class="loader-stub"></div>' },
   },
 };
 
 describe('JobListings.vue', () => {
-  it('fetches and renders jobs', async () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('shows loading spinner while loading', async () => {
+    fetchJobs.mockReturnValue(new Promise(() => {})); // Ikuinen lataus
+    const wrapper = mount(JobListings, { global });
+    expect(wrapper.find('.loader-stub').exists()).toBe(true);
+  });
+
+  it('fetches and renders jobs after loading', async () => {
+    fetchJobs.mockResolvedValue(jobsMock);
+    const wrapper = mount(JobListings, { global });
+    await flushPromises();
+
+    expect(wrapper.findAll('.job-stub').length).toBe(4);
+    expect(wrapper.find('.loader-stub').exists()).toBe(false);
+  });
+
+  it('shows "No Open Jobs" message if list is empty', async () => {
+    fetchJobs.mockResolvedValue([]);
+    const wrapper = mount(JobListings, { global });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('No Open Jobs available');
+  });
+
+  it('logs error on failed fetch', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    fetchJobs.mockRejectedValue(new Error('Fetch failed'));
+
+    mount(JobListings, { global });
+    await flushPromises();
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching jobs:',
+      expect.any(Error),
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('respects jobLimit prop', async () => {
+    fetchJobs.mockResolvedValue(jobsMock);
     const wrapper = mount(JobListings, {
       props: { jobLimit: 2 },
       global,
     });
     await flushPromises();
-    expect(wrapper.findAll('.job-listing').length).toBe(2);
+    expect(wrapper.findAll('.job-stub').length).toBe(2);
   });
 
-  it('shows loading spinner while loading', async () => {
-    let resolve;
-    const fetchPromise = new Promise((r) => (resolve = r));
-    fetchJobs.mockImplementation(() => fetchPromise);
-    const wrapper = mount(JobListings, { global });
-    expect(wrapper.find('pulse-loader-stub').exists()).toBe(true);
-    resolve(jobsMock);
-    await flushPromises();
-  });
-
-  it('shows "View All Jobs" button if showAllJobsButton is true', async () => {
+  it('renders "View All Jobs" button when showAllJobsButton is true', async () => {
+    fetchJobs.mockResolvedValue(jobsMock);
     const wrapper = mount(JobListings, {
       props: { showAllJobsButton: true },
       global,
     });
     await flushPromises();
     expect(wrapper.text()).toContain('View All Jobs');
+  });
+
+  describe('Sorting Functionality', () => {
+    beforeEach(async () => {
+      fetchJobs.mockResolvedValue(jobsMock);
+    });
+
+    it('sorts by title-asc and toggles off', async () => {
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      const btn = wrapper.find('button:nth-of-type(1)'); // Title A-Z
+      await btn.trigger('click');
+
+      const jobs = wrapper.findAll('.job-stub');
+      expect(jobs[0].text()).toBe('Intern');
+      expect(wrapper.text()).toContain('Filter title-asc');
+
+      // Painetaan uudestaan (poistaa sorttauksen)
+      await btn.trigger('click');
+      expect(wrapper.text()).toContain('Filter '); // sortBy on tyhjä
+    });
+
+    it('sorts by title-desc', async () => {
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      await wrapper.find('button:nth-of-type(2)').trigger('click'); // Title Z-A
+      const jobs = wrapper.findAll('.job-stub');
+      expect(jobs[0].text()).toBe('Web Fullstack Developer');
+    });
+
+    it('sorts by salary-asc', async () => {
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      await wrapper.find('button:nth-of-type(3)').trigger('click'); // Salary Low-High
+      const jobs = wrapper.findAll('.job-stub');
+
+      expect(jobs[0].text()).toBe('Intern');
+      expect(jobs[1].text()).toBe('Java Backend Developer');
+    });
+
+    it('sorts by salary-desc', async () => {
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      await wrapper.find('button:nth-of-type(4)').trigger('click'); // Salary High-Low
+      const jobs = wrapper.findAll('.job-stub');
+
+      expect(jobs[0].text()).toBe('Web Fullstack Developer');
+      expect(jobs[1].text()).toBe('Vue Frontend Developer');
+    });
   });
 });

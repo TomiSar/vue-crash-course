@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, reactive, onMounted } from 'vue';
+import { defineProps, reactive, onMounted, computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import JobListing from '@/components/JobListing.vue';
 import { PulseLoader } from 'vue-spinner';
@@ -16,6 +16,38 @@ defineProps({
 const state = reactive({
   jobs: [],
   isLoading: true,
+  sortBy: '', // '' (no sort), 'title-asc', 'title-desc', 'salary-asc', 'salary-desc'
+});
+
+const toggleSort = (sortOption) => {
+  if (state.sortBy === sortOption) {
+    state.sortBy = ''; // Remove sort if clicked again
+  } else {
+    state.sortBy = sortOption;
+  }
+};
+
+const sortedJobs = computed(() => {
+  const jobsCopy = [...state.jobs];
+
+  if (state.sortBy === 'title-asc') {
+    return jobsCopy.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (state.sortBy === 'title-desc') {
+    return jobsCopy.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (state.sortBy === 'salary-asc') {
+    return jobsCopy.sort((a, b) => {
+      const salaryA = parseInt(a.salary?.replace(/\D/g, '') || 0);
+      const salaryB = parseInt(b.salary?.replace(/\D/g, '') || 0);
+      return salaryA - salaryB;
+    });
+  } else if (state.sortBy === 'salary-desc') {
+    return jobsCopy.sort((a, b) => {
+      const salaryA = parseInt(a.salary?.replace(/\D/g, '') || 0);
+      const salaryB = parseInt(b.salary?.replace(/\D/g, '') || 0);
+      return salaryB - salaryA;
+    });
+  }
+  return jobsCopy;
 });
 
 onMounted(async () => {
@@ -36,6 +68,61 @@ onMounted(async () => {
         Browse Jobs
       </h2>
       <div
+        v-if="!state.isLoading && state.jobs.length > 0"
+        class="mb-6 flex flex-col items-center gap-4"
+      >
+        <div class="flex gap-2 flex-wrap justify-center">
+          <h3 class="text-3xl font-bold text-gray-500">
+            Filter {{ state.sortBy }}
+          </h3>
+          <button
+            @click="toggleSort('title-asc')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition',
+              state.sortBy === 'title-asc'
+                ? 'bg-green-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
+            ]"
+          >
+            Title A-Z
+          </button>
+          <button
+            @click="toggleSort('title-desc')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition',
+              state.sortBy === 'title-desc'
+                ? 'bg-green-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
+            ]"
+          >
+            Title Z-A
+          </button>
+          <button
+            @click="toggleSort('salary-asc')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition',
+              state.sortBy === 'salary-asc'
+                ? 'bg-green-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
+            ]"
+          >
+            Salary: Low-High
+          </button>
+          <button
+            @click="toggleSort('salary-desc')"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition',
+              state.sortBy === 'salary-desc'
+                ? 'bg-green-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
+            ]"
+          >
+            Salary: High-Low
+          </button>
+        </div>
+      </div>
+
+      <div
         v-if="state.isLoading"
         class="flex justify-center items-center py-20 w-full"
       >
@@ -52,7 +139,7 @@ onMounted(async () => {
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <JobListing
-          v-for="job in state.jobs.slice(0, jobLimit || state.jobs.length)"
+          v-for="job in sortedJobs.slice(0, jobLimit || sortedJobs.length)"
           :key="job.id"
           :job="job"
         />

@@ -38,13 +38,10 @@ const handleCancel = () => {
     v-if="isOpen"
     class="fixed inset-0 z-50 flex items-center justify-center"
   >
-    <!-- Backdrop -->
     <div
       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
       @click="handleCancel"
     ></div>
-
-    <!-- Modal Content -->
     <div
       class="relative bg-white rounded-lg shadow-xl p-8 max-w-sm w-full mx-4"
     >
