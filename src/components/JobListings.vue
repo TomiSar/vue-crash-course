@@ -27,27 +27,19 @@ const toggleSort = (sortOption) => {
   }
 };
 
+const getSalaryValue = (salary) => parseInt(salary?.replace(/\D/g, '') || 0);
+
+const sortStrategies = {
+  'title-asc': (a, b) => a.title.localeCompare(b.title),
+  'title-desc': (a, b) => b.title.localeCompare(a.title),
+  'salary-asc': (a, b) => getSalaryValue(a.salary) - getSalaryValue(b.salary),
+  'salary-desc': (a, b) => getSalaryValue(b.salary) - getSalaryValue(a.salary),
+};
+
 const sortedJobs = computed(() => {
   const jobsCopy = [...state.jobs];
-
-  if (state.sortBy === 'title-asc') {
-    return jobsCopy.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (state.sortBy === 'title-desc') {
-    return jobsCopy.sort((a, b) => b.title.localeCompare(a.title));
-  } else if (state.sortBy === 'salary-asc') {
-    return jobsCopy.sort((a, b) => {
-      const salaryA = parseInt(a.salary?.replace(/\D/g, '') || 0);
-      const salaryB = parseInt(b.salary?.replace(/\D/g, '') || 0);
-      return salaryA - salaryB;
-    });
-  } else if (state.sortBy === 'salary-desc') {
-    return jobsCopy.sort((a, b) => {
-      const salaryA = parseInt(a.salary?.replace(/\D/g, '') || 0);
-      const salaryB = parseInt(b.salary?.replace(/\D/g, '') || 0);
-      return salaryB - salaryA;
-    });
-  }
-  return jobsCopy;
+  const sortFn = sortStrategies[state.sortBy];
+  return sortFn ? jobsCopy.sort(sortFn) : jobsCopy;
 });
 
 onMounted(async () => {
