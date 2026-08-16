@@ -1,8 +1,8 @@
 <script setup>
 import { defineProps, reactive, onMounted, computed } from 'vue';
+import { PulseLoader } from 'vue-spinner';
 import { RouterLink } from 'vue-router';
 import JobListing from '@/components/JobListing.vue';
-import { PulseLoader } from 'vue-spinner';
 import { fetchJobs } from '@/api/jobs';
 
 defineProps({
@@ -17,7 +17,17 @@ const state = reactive({
   jobs: [],
   isLoading: true,
   sortBy: '', // '' (no sort), 'title-asc', 'title-desc', 'salary-asc', 'salary-desc'
+  selectedType: 'All',
 });
+
+const jobTypeOptions = [
+  'All',
+  'Full-Time',
+  'Part-Time',
+  'Remote',
+  'Contract',
+  'Internship',
+];
 
 const toggleSort = (sortOption) => {
   if (state.sortBy === sortOption) {
@@ -36,10 +46,15 @@ const sortStrategies = {
   'salary-desc': (a, b) => getSalaryValue(b.salary) - getSalaryValue(a.salary),
 };
 
-const sortedJobs = computed(() => {
+const filteredJobs = computed(() => {
   const jobsCopy = [...state.jobs];
+  const jobsByType =
+    state.selectedType === 'All'
+      ? jobsCopy
+      : jobsCopy.filter((job) => job.type === state.selectedType);
+
   const sortFn = sortStrategies[state.sortBy];
-  return sortFn ? jobsCopy.sort(sortFn) : jobsCopy;
+  return sortFn ? jobsByType.sort(sortFn) : jobsByType;
 });
 
 onMounted(async () => {
@@ -63,6 +78,18 @@ onMounted(async () => {
         v-if="!state.isLoading && state.jobs.length > 0"
         class="mb-6 flex flex-col items-center gap-4"
       >
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <label class="text-gray-700 font-medium">Type:</label>
+          <select
+            v-model="state.selectedType"
+            class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option v-for="type in jobTypeOptions" :key="type" :value="type">
+              {{ type === 'All' ? 'All Types' : type }}
+            </option>
+          </select>
+        </div>
+
         <div class="flex gap-2 flex-wrap justify-center">
           <h3 class="text-3xl font-bold text-gray-500">
             Filter {{ state.sortBy }}
@@ -98,7 +125,7 @@ onMounted(async () => {
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
             ]"
           >
-            Salary: Low-High
+            Salary Low-High
           </button>
           <button
             @click="toggleSort('salary-desc')"
@@ -109,11 +136,10 @@ onMounted(async () => {
                 : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
             ]"
           >
-            Salary: High-Low
+            Salary High-Low
           </button>
         </div>
       </div>
-
       <div
         v-if="state.isLoading"
         class="flex justify-center items-center py-20 w-full"
@@ -122,16 +148,22 @@ onMounted(async () => {
         <p class="text-gray-500 mt-4 font-medium">Loading jobs...</p>
       </div>
       <div
-        v-else-if="state.jobs.length === 0"
+        v-else-if="filteredJobs.length === 0"
         class="text-center text-gray-500 py-20 bg-white rounded-lg shadow-md"
       >
         <i class="pi pi-briefcase text-5xl mb-4 text-gray-300"></i>
-        <h3 class="text-2xl font-bold mb-2">No Open Jobs available</h3>
+        <h3 class="text-2xl font-bold mb-2">
+          {{
+            state.selectedType === 'All'
+              ? 'No open jobs available'
+              : `No open ${state.selectedType} jobs available`
+          }}
+        </h3>
         <p>Check back later for new opportunities.</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <JobListing
-          v-for="job in sortedJobs.slice(0, jobLimit || sortedJobs.length)"
+          v-for="job in filteredJobs.slice(0, jobLimit || filteredJobs.length)"
           :key="job.id"
           :job="job"
         />

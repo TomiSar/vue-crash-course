@@ -9,7 +9,7 @@ const jobsMock = [
     title: 'Vue Frontend Developer',
     description:
       'A long description for the job that exceeds 90 characters. This is just the beginning of the description. More details about the job will be provided here.',
-    type: 'Full-time',
+    type: 'Full-Time',
     salary: '$4000',
     location: 'Helsinki',
   },
@@ -17,7 +17,7 @@ const jobsMock = [
     id: 2,
     title: 'Java Backend Developer',
     description: 'Backend job description.',
-    type: 'Part-time',
+    type: 'Part-Time',
     salary: '$3000',
     location: 'Espoo',
   },
@@ -26,7 +26,7 @@ const jobsMock = [
     title: 'Web Fullstack Developer',
     description:
       'As a Fullstack Developer, you will work on both frontend and backend technologies to build robust web applications. You should be comfortable with TypeScript frameworks, REST APIs, and database management.',
-    type: 'Full-time',
+    type: 'Full-Time',
     salary: '$6500',
     location: 'Tampere',
   },
@@ -75,12 +75,13 @@ describe('JobListings.vue', () => {
     expect(wrapper.find('.loader-stub').exists()).toBe(false);
   });
 
-  it('shows "No Open Jobs" message if list is empty', async () => {
+  it('shows empty state message if list is empty', async () => {
     fetchJobs.mockResolvedValue([]);
     const wrapper = mount(JobListings, { global });
     await flushPromises();
 
-    expect(wrapper.text()).toContain('No Open Jobs available');
+    expect(wrapper.text()).toContain('No open jobs available');
+    expect(wrapper.text()).toContain('Check back later for new opportunities.');
   });
 
   it('logs error on failed fetch', async () => {
@@ -115,6 +116,32 @@ describe('JobListings.vue', () => {
     });
     await flushPromises();
     expect(wrapper.text()).toContain('View All Jobs');
+  });
+
+  it('filters jobs by selected job type', async () => {
+    fetchJobs.mockResolvedValue(jobsMock);
+    const wrapper = mount(JobListings, { global });
+    await flushPromises();
+
+    const typeSelect = wrapper.find('select');
+    await typeSelect.setValue('Full-Time');
+
+    const jobs = wrapper.findAll('.job-stub');
+    expect(jobs).toHaveLength(2);
+    expect(wrapper.text()).toContain('Vue Frontend Developer');
+    expect(wrapper.text()).toContain('Web Fullstack Developer');
+    expect(wrapper.text()).not.toContain('Java Backend Developer');
+  });
+
+  it('shows empty state for a selected type with no matches', async () => {
+    fetchJobs.mockResolvedValue(jobsMock);
+    const wrapper = mount(JobListings, { global });
+    await flushPromises();
+
+    const typeSelect = wrapper.find('select');
+    await typeSelect.setValue('Remote');
+
+    expect(wrapper.text()).toContain('No open Remote jobs available');
   });
 
   describe('JobListings Sorting', () => {
