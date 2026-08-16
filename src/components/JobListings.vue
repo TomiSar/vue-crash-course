@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router';
 import JobListing from '@/components/JobListing.vue';
 import { fetchJobs } from '@/api/jobs';
 
-defineProps({
+const props = defineProps({
   jobLimit: Number,
   showAllJobsButton: {
     type: Boolean,
@@ -14,6 +14,7 @@ defineProps({
 });
 
 const state = reactive({
+  jobLimit: props.jobLimit || 3,
   jobs: [],
   isLoading: true,
   sortBy: '', // '' (no sort), 'title-asc', 'title-desc', 'salary-asc', 'salary-desc'
@@ -79,17 +80,26 @@ onMounted(async () => {
         class="mb-6 flex flex-col items-center gap-4"
       >
         <div class="flex flex-col sm:flex-row items-center gap-3">
-          <label class="text-gray-700 font-medium">Type:</label>
+          <label class="text-2xl font-bold text-gray-500">Job type</label>
           <select
             v-model="state.selectedType"
             class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option v-for="type in jobTypeOptions" :key="type" :value="type">
-              {{ type === 'All' ? 'All Types' : type }}
+              {{ type === 'All' ? 'All' : type }}
             </option>
           </select>
+          <label class="text-2xl font-bold text-gray-500 ml-4"
+            >Job(s) per page</label
+          >
+          <input
+            type="number"
+            v-model.number="state.jobLimit"
+            min="1"
+            :max="filteredJobs.length"
+            class="w-20 border rounded-lg px-3 py-2"
+          />
         </div>
-
         <div class="flex gap-2 flex-wrap justify-center">
           <h3 class="text-3xl font-bold text-gray-500">
             Filter {{ state.sortBy }}
@@ -163,7 +173,10 @@ onMounted(async () => {
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <JobListing
-          v-for="job in filteredJobs.slice(0, jobLimit || filteredJobs.length)"
+          v-for="job in filteredJobs.slice(
+            0,
+            state.jobLimit || filteredJobs.length,
+          )"
           :key="job.id"
           :job="job"
         />

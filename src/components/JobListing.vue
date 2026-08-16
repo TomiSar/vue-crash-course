@@ -43,7 +43,7 @@ const truncatedDescription = computed(() => {
           {{ showFullDescription ? 'Less' : 'More' }}
         </button>
       </div>
-
+      <h3 class="text-gray-600 mb-2">{{ job?.company?.name }}</h3>
       <h3 class="text-green-500 mb-2">{{ job.salary }}</h3>
       <div class="border border-gray-100 mb-5"></div>
 

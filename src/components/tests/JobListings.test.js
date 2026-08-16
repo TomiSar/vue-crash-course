@@ -68,7 +68,10 @@ describe('JobListings.vue', () => {
 
   it('fetches and renders jobs after loading', async () => {
     fetchJobs.mockResolvedValue(jobsMock);
-    const wrapper = mount(JobListings, { global });
+    const wrapper = mount(JobListings, {
+      global,
+      props: { jobLimit: 4 },
+    });
     await flushPromises();
 
     expect(wrapper.findAll('.job-stub').length).toBe(4);
@@ -150,7 +153,10 @@ describe('JobListings.vue', () => {
     });
 
     it('sorts by title-asc and toggles off', async () => {
-      const wrapper = mount(JobListings, { global });
+      const wrapper = mount(JobListings, {
+        global,
+        props: { jobLimit: 4 },
+      });
       await flushPromises();
 
       const btn = wrapper.find('button:nth-of-type(1)'); // Title A-Z
@@ -158,6 +164,9 @@ describe('JobListings.vue', () => {
 
       const jobs = wrapper.findAll('.job-stub');
       expect(jobs[0].text()).toBe('Intern');
+      expect(jobs[1].text()).toBe('Java Backend Developer');
+      expect(jobs[2].text()).toBe('Vue Frontend Developer');
+      expect(jobs[3].text()).toBe('Web Fullstack Developer');
       expect(wrapper.text()).toContain('Filter title-asc');
 
       await btn.trigger('click');
@@ -165,16 +174,25 @@ describe('JobListings.vue', () => {
     });
 
     it('sorts by title-desc', async () => {
-      const wrapper = mount(JobListings, { global });
+      const wrapper = mount(JobListings, {
+        global,
+        props: { jobLimit: 4 },
+      });
       await flushPromises();
 
       await wrapper.find('button:nth-of-type(2)').trigger('click'); // Title Z-A
       const jobs = wrapper.findAll('.job-stub');
       expect(jobs[0].text()).toBe('Web Fullstack Developer');
+      expect(jobs[1].text()).toBe('Vue Frontend Developer');
+      expect(jobs[2].text()).toBe('Java Backend Developer');
+      expect(jobs[3].text()).toBe('Intern');
     });
 
     it('sorts by salary-asc', async () => {
-      const wrapper = mount(JobListings, { global });
+      const wrapper = mount(JobListings, {
+        global,
+        props: { jobLimit: 4 },
+      });
       await flushPromises();
 
       await wrapper.find('button:nth-of-type(3)').trigger('click'); // Salary Low-High
@@ -187,7 +205,10 @@ describe('JobListings.vue', () => {
     });
 
     it('sorts by salary-desc', async () => {
-      const wrapper = mount(JobListings, { global });
+      const wrapper = mount(JobListings, {
+        global,
+        props: { jobLimit: 4 },
+      });
       await flushPromises();
 
       await wrapper.find('button:nth-of-type(4)').trigger('click'); // Salary High-Low
@@ -197,6 +218,47 @@ describe('JobListings.vue', () => {
       expect(jobs[1].text()).toBe('Vue Frontend Developer');
       expect(jobs[2].text()).toBe('Java Backend Developer');
       expect(jobs[3].text()).toBe('Intern');
+    });
+  });
+
+  describe('Job Limit Input', () => {
+    it('allows user to change job limit via input field', async () => {
+      fetchJobs.mockResolvedValue(jobsMock);
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      const limitInput = wrapper.find('input[type="number"]');
+
+      await limitInput.setValue(1);
+      expect(wrapper.findAll('.job-stub')).toHaveLength(1);
+
+      await limitInput.setValue(4);
+      expect(wrapper.findAll('.job-stub')).toHaveLength(4);
+    });
+
+    it('updates max attribute based on filtered jobs length', async () => {
+      fetchJobs.mockResolvedValue(jobsMock);
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      const limitInput = wrapper.find('input[type="number"]');
+      expect(limitInput.attributes('max')).toBe('4');
+
+      const typeSelect = wrapper.find('select');
+      await typeSelect.setValue('Internship');
+
+      expect(limitInput.attributes('max')).toBe('1');
+    });
+
+    it('shows all jobs if jobLimit input is cleared (fallback to length)', async () => {
+      fetchJobs.mockResolvedValue(jobsMock);
+      const wrapper = mount(JobListings, { global });
+      await flushPromises();
+
+      const limitInput = wrapper.find('input[type="number"]');
+      await limitInput.setValue('');
+
+      expect(wrapper.findAll('.job-stub')).toHaveLength(4);
     });
   });
 });

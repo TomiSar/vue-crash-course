@@ -43,13 +43,14 @@ const handleSubmit = async () => {
 
   try {
     const updatedJob = await updateJob(jobId, { ...form });
-    toast.success('Job updated successfully!', {
+    toast.success(`Job ${form.title} updated successfully!`, {
       position: POSITION.TOP_RIGHT,
       timeout: 2000,
     });
     router.push(`/jobs/${updatedJob.id}`);
+    // router.push('/jobs');
   } catch (error) {
-    console.error('Error updating job:', error);
+    console.error(`Error updating job ${form.title}`, error);
     toast.error('Error updating job!', {
       position: POSITION.TOP_RIGHT,
       timeout: 2000,
