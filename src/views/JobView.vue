@@ -5,6 +5,7 @@ import { PulseLoader } from 'vue-spinner';
 import { fetchJobById, deleteJob } from '../api/jobs';
 import BackButton from '../components/BackButton.vue';
 import Modal from '../components/Modal.vue';
+import { authState } from '@/store/auth';
 import { useToast, POSITION } from 'vue-toastification';
 
 const route = useRoute();
@@ -108,7 +109,10 @@ onMounted(async () => {
           </div>
 
           <!-- Manage -->
-          <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+          <div
+            v-if="authState.isAdmin"
+            class="bg-white p-6 rounded-lg shadow-md mt-6"
+          >
             <h3 class="text-xl font-bold mb-6">Manage Job</h3>
             <RouterLink
               class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"

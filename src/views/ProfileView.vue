@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { authState, setAuthState } from '@/store/auth';
+import { POSITION, useToast } from 'vue-toastification';
+const toast = useToast();
 
 const router = useRouter();
 const form = ref({
@@ -41,10 +43,19 @@ const updateProfile = async () => {
       withCredentials: true,
     });
     setAuthState(response.data.user);
+    toast.success('Profile updated successfully!', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 2000,
+    });
     router.push('/');
   } catch (error) {
     errorMessage.value =
       error?.response?.data?.message || 'Failed to update profile';
+    console.error('Error updating profile:', error);
+    toast.error('Error updating profile!', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 2000,
+    });
   } finally {
     isSaving.value = false;
   }

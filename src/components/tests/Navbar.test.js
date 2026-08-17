@@ -97,12 +97,12 @@ describe('Navbar.vue', () => {
     expect(wrapper.text()).toContain('User');
   });
 
-  it('logs the user out and redirects to login', async () => {
+  it('logs the user out and redirects to home', async () => {
     const wrapper = mount(Navbar);
 
     await wrapper.get('button').trigger('click');
 
     expect(mockLogoutUser).toHaveBeenCalledTimes(1);
-    expect(mockRouter.push).toHaveBeenCalledWith('/login');
+    expect(mockRouter.push).toHaveBeenCalledWith('/');
   });
 });

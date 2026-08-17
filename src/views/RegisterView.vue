@@ -22,7 +22,7 @@ const submitForm = async () => {
     await axios.post('/api/auth/register', form.value, {
       withCredentials: true,
     });
-    router.push('/jobs');
+    router.push('/login');
   } catch (error) {
     errorMessage.value =
       error?.response?.data?.message || 'Registration failed';

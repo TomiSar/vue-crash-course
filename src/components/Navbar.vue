@@ -12,7 +12,7 @@ const userName = computed(() => authState.user?.name || 'User');
 
 const handleLogout = async () => {
   await logoutUser();
-  router.push('/login');
+  router.push('/');
 };
 </script>
 
@@ -33,6 +33,17 @@ const handleLogout = async () => {
           <div class="md:ml-auto">
             <div class="flex flex-wrap items-center gap-2">
               <template v-if="authState.isAuthenticated">
+                <RouterLink
+                  to="/profile"
+                  :class="[
+                    isActiveLink('/profile')
+                      ? 'bg-green-900'
+                      : 'hover:bg-gray-900 hover:text-white',
+                    'rounded-md px-3 py-2 text-white',
+                  ]"
+                >
+                  {{ userName }}
+                </RouterLink>
                 <RouterLink
                   :class="[
                     isActiveLink('/')
@@ -73,18 +84,6 @@ const handleLogout = async () => {
                 Add Job
               </RouterLink>
               <template v-if="authState.isAuthenticated">
-                <RouterLink
-                  to="/profile"
-                  :class="[
-                    isActiveLink('/profile')
-                      ? 'bg-green-900'
-                      : 'hover:bg-gray-900 hover:text-white',
-                    'rounded-md px-3 py-2 text-white',
-                  ]"
-                >
-                  {{ userName }}
-                </RouterLink>
-
                 <button
                   type="button"
                   @click="handleLogout"

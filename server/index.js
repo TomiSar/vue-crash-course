@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
-app.use('/jobs', jobsRoutes);
+app.use('/api/jobs', jobsRoutes);
 app.get('/', (req, res) => res.send('Jobs API'));
 
 app.listen(PORT, () => {
