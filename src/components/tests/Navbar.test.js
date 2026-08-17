@@ -87,14 +87,24 @@ describe('Navbar.vue', () => {
     expect(wrapper.find('[data-testid="add-job-link"]').exists()).toBe(false);
   });
 
-  it('shows the default user name when the authenticated user has no name', () => {
+  it('shows the user name initials when the authenticated user has name', () => {
+    mockAuthState.isAuthenticated = true;
+    mockAuthState.isAdmin = false;
+    mockAuthState.user = { name: 'John', lastName: 'Doe' };
+
+    const wrapper = mount(Navbar);
+
+    expect(wrapper.text()).toContain('JD');
+  });
+
+  it('shows the default user name initials when the authenticated user has no name', () => {
     mockAuthState.isAuthenticated = true;
     mockAuthState.isAdmin = false;
     mockAuthState.user = {};
 
     const wrapper = mount(Navbar);
 
-    expect(wrapper.text()).toContain('User');
+    expect(wrapper.text()).toContain('TU');
   });
 
   it('logs the user out and redirects to home', async () => {

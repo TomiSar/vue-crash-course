@@ -8,7 +8,16 @@ const route = useRoute();
 const router = useRouter();
 
 const isActiveLink = (routePath) => route.path === routePath;
-const userName = computed(() => authState.user?.name || 'User');
+
+const userInitials = computed(() => {
+  if (authState.user?.name && authState.user?.lastName) {
+    return (
+      authState.user.name.charAt(0).toUpperCase() +
+      authState.user.lastName.charAt(0).toUpperCase()
+    );
+  }
+  return 'TU';
+});
 
 const handleLogout = async () => {
   await logoutUser();
@@ -29,20 +38,21 @@ const handleLogout = async () => {
               >Vue Jobs</span
             >
           </RouterLink>
-
           <div class="md:ml-auto">
             <div class="flex flex-wrap items-center gap-2">
               <template v-if="authState.isAuthenticated">
-                <RouterLink
-                  to="/profile"
-                  :class="[
-                    isActiveLink('/profile')
-                      ? 'bg-green-900'
-                      : 'hover:bg-gray-900 hover:text-white',
-                    'rounded-md px-3 py-2 text-white',
-                  ]"
-                >
-                  {{ userName }}
+                <!-- Avatar -->
+                <RouterLink to="/profile" class="flex items-center gap-5 group">
+                  <div
+                    :class="[
+                      isActiveLink('/profile')
+                        ? 'border-white bg-amber-600'
+                        : 'border-transparent bg-amber-500 group-hover:bg-gray-900',
+                      'flex h-10 w-10 items-center justify-center rounded-full border-2 text-white font-bold transition',
+                    ]"
+                  >
+                    {{ userInitials }}
+                  </div>
                 </RouterLink>
                 <RouterLink
                   :class="[
