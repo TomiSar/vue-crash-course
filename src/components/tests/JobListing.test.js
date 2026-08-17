@@ -1,6 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import JobListing from '../JobListing.vue';
+
+const { mockAuthState } = vi.hoisted(() => ({
+  mockAuthState: {
+    isAuthenticated: true,
+    isAdmin: true,
+    user: { name: 'Admin' },
+  },
+}));
+
+vi.mock('@/store/auth', () => ({
+  authState: mockAuthState,
+}));
 
 const jobMock = {
   title: 'Vue Frontend Developer',
@@ -9,6 +21,11 @@ const jobMock = {
   type: 'Full-time',
   salary: '$4000',
   location: 'Helsinki',
+  company: {
+    name: 'Test Company',
+    contactEmail: 'test@test.com',
+    contactPhone: '123456',
+  },
 };
 
 const global = {
@@ -20,6 +37,12 @@ const global = {
 };
 
 describe('JobListing.vue', () => {
+  beforeEach(() => {
+    mockAuthState.isAuthenticated = true;
+    mockAuthState.isAdmin = true;
+    mockAuthState.user = { name: 'Admin' };
+  });
+
   it('renders job title, type, salary, and location', () => {
     const wrapper = mount(JobListing, {
       props: { job: jobMock },
@@ -54,7 +77,7 @@ describe('JobListing.vue', () => {
     expect(wrapper.text()).toContain('...');
   });
 
-  it('renders RouterLinks for Read More and Edit Job', () => {
+  it('renders RouterLinks for Read More and Edit Job when admin is authenticated', () => {
     const wrapper = mount(JobListing, {
       props: { job: jobMock },
       global,

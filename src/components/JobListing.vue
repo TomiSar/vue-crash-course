@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, ref, computed } from 'vue';
 import { RouterLink } from 'vue-router';
+import { authState } from '@/store/auth';
 
 const props = defineProps({
   job: {
@@ -43,10 +44,14 @@ const truncatedDescription = computed(() => {
           {{ showFullDescription ? 'Less' : 'More' }}
         </button>
       </div>
-      <h3 class="text-gray-600 mb-2">{{ job?.company?.name }}</h3>
+      <h3 class="text-gray-600 mb-2">
+        {{ job?.company?.name }}
+      </h3>
+      <h3 class="text-gray-600 mb-2">
+        {{ job?.company?.contactEmail }} / {{ job?.company?.contactPhone }}
+      </h3>
       <h3 class="text-green-500 mb-2">{{ job.salary }}</h3>
       <div class="border border-gray-100 mb-5"></div>
-
       <div class="flex flex-col xl:flex-row justify-between mb-4">
         <div class="text-orange-700 mb-3">
           <i class="pi pi-map-marker text-orange-700"></i>
@@ -60,6 +65,7 @@ const truncatedDescription = computed(() => {
             Read More
           </RouterLink>
           <RouterLink
+            v-if="authState.isAuthenticated && authState.isAdmin"
             class="h-[36px] bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-center text-xs xl:text-sm w-full xl:w-auto"
             :to="`/jobs/edit/${job.id}`"
           >

@@ -5,9 +5,9 @@ import Hero from '../Hero.vue';
 describe('Hero.vue', () => {
   it('renders default title and description', () => {
     const wrapper = mount(Hero);
-    expect(wrapper.text()).toContain('Become a Vue Developer');
+    expect(wrapper.text()).toContain('Find your dream job with Job Finder');
     expect(wrapper.text()).toContain(
-      'Find the Vue job that fits your skills and needs',
+      'Find the job that fits your skills and needs',
     );
   });
 

@@ -5,8 +5,11 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import axios from 'axios';
+import { checkAuth } from './store/auth';
+
+axios.defaults.withCredentials = true;
+
+checkAuth();
 
 createApp(App).use(router).use(Toast).mount('#app');
-// const app = createApp(App);
-// app.use(router);
-// app.mount('#app');
